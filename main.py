@@ -153,6 +153,28 @@ def add_entry(
     return entry
 
 
+@app.patch("/entries/{entry_id}", response_model=schemas.EmotionEntryOut)
+def update_entry_note(
+    entry_id: int,
+    update: schemas.EntryNoteUpdate,
+    db: Session = Depends(get_db),
+    user: models.User = Depends(auth.get_current_user),
+):
+    """Edits only the note on an existing entry -- the emotion selection itself is immutable by design."""
+    entry = (
+        db.query(models.EmotionEntry)
+        .join(models.Day)
+        .filter(models.EmotionEntry.id == entry_id, models.Day.owner_id == user.id)
+        .first()
+    )
+    if not entry:
+        raise HTTPException(status_code=404, detail="Entry not found")
+    entry.note = update.note
+    db.commit()
+    db.refresh(entry)
+    return entry
+
+
 @app.delete("/entries/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_entry(
     entry_id: int, db: Session = Depends(get_db), user: models.User = Depends(auth.get_current_user)

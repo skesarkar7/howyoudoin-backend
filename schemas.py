@@ -29,6 +29,10 @@ class EmotionEntryCreate(BaseModel):
     note: Optional[str] = Field(default=None, max_length=2000)
 
 
+class EntryNoteUpdate(BaseModel):
+    note: Optional[str] = Field(default=None, max_length=2000)
+
+
 class EmotionEntryOut(BaseModel):
     id: int
     primary_emotion: str
