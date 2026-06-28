@@ -13,7 +13,7 @@ from database import engine, get_db, Base
 import models
 import schemas
 import auth
-from emotions_data import EMOTIONS
+from emotions_data import EMOTIONS, EMOTION_DESCRIPTIONS
 
 Base.metadata.create_all(bind=engine)
 
@@ -95,8 +95,9 @@ def refresh(payload: schemas.RefreshRequest, db: Session = Depends(get_db)):
 
 @app.get("/emotions")
 def get_emotions():
-    """Returns the full primary -> secondary -> tertiary taxonomy used to build the picker UI."""
-    return EMOTIONS
+    """Returns the full primary -> secondary -> tertiary taxonomy used to build the picker UI,
+    plus a flat one-line description per emotion name for tooltips/subtext in the UI."""
+    return {"taxonomy": EMOTIONS, "descriptions": EMOTION_DESCRIPTIONS}
 
 
 # ---------------- Days & entries ----------------
